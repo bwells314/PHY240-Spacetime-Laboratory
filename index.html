@@ -1,0 +1,184 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>PHY 240 | Interactive Spacetime Laboratory</title><style>
+:root{color-scheme:dark;--bg:#0b1220;--panel:#151f30;--panel2:#1b2a40;--line:#31415b;--txt:#e9f0fc;--muted:#a5b5cd;--blue:#5ab5ff;--gold:#ffd075;--green:#65dfb6;--red:#ff8e9b}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--txt);font:15px/1.5 system-ui,Segoe UI,Arial,sans-serif}header{padding:24px max(20px,calc((100vw - 1350px)/2));background:linear-gradient(110deg,#172941,#101b30);border-bottom:1px solid var(--line)}h1{font-size:clamp(24px,3vw,34px);margin:0 0 4px}header p{margin:0;color:var(--muted)}main{max-width:1390px;margin:auto;padding:20px}button,select,input{font:inherit}button,select{background:#243650;color:var(--txt);border:1px solid #465d7b;border-radius:8px;padding:9px 12px;cursor:pointer}button:hover{background:#314968}button.active{background:#17639a;border-color:#5ab5ff}button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid var(--gold)}.tabs{display:flex;gap:8px;overflow-x:auto;padding-bottom:10px}.tabs button{white-space:nowrap}.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px}.intro{display:flex;gap:16px;justify-content:space-between;align-items:start;flex-wrap:wrap;margin:12px 0}.intro h2{margin:0 0 4px;font-size:23px}.intro p{max-width:900px;color:var(--muted);margin:0}.controlrow{display:flex;gap:14px;align-items:center;flex-wrap:wrap}.controlrow label{display:flex;align-items:center;gap:8px}.controlrow input[type=range]{width:175px;accent-color:var(--blue)}.controls{display:grid;gap:14px;margin-bottom:14px}.readouts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.stat{background:var(--panel2);padding:10px 12px;border-radius:9px;min-height:67px}.stat small{display:block;color:var(--muted)}.stat strong{font-size:18px;font-variant-numeric:tabular-nums}.visuals{display:grid;grid-template-columns:1fr 1fr;gap:14px}.visuals .diagram{grid-column:1/-1}.panel h3{margin:0 0 8px;font-size:16px}.scene{width:100%;height:235px;display:block;background:#0d1829;border-radius:8px}.plot{width:100%;height:390px;display:block;background:#0d1829;border-radius:8px}.legend{display:flex;gap:15px;flex-wrap:wrap;color:var(--muted);font-size:12px;margin-top:8px}.legend span:before{content:'●';color:var(--dot);margin-right:6px}.bottom{display:grid;grid-template-columns:1.1fr .9fr;gap:14px;margin-top:14px}.bottom p{margin:6px 0}.events{display:flex;flex-wrap:wrap;gap:7px;margin-top:9px}.events button{font-size:12px;padding:6px 9px}.math{font-family:Cambria,'Times New Roman',serif;font-size:18px;line-height:1.8}.note{font-size:13px;color:var(--muted)}.question{border-top:1px solid var(--line);padding-top:10px;margin-top:10px}.question input{width:130px;max-width:100%;background:#0d1829;color:var(--txt);border:1px solid #536986;padding:7px;border-radius:5px}.result{margin-left:8px;font-size:13px}.footer{padding:18px 0;color:var(--muted);font-size:12px}.slider{flex:1;min-width:160px}.slider input{width:100%;accent-color:var(--blue)}@media(max-width:760px){.visuals,.bottom{grid-template-columns:1fr}.visuals .diagram{grid-column:auto}.readouts{grid-template-columns:repeat(2,1fr)}.scene{height:210px}.plot{height:330px}}
+</style></head><body><header><h1>PHY 240 · Interactive Spacetime Laboratory</h1><p>Two reference frames · Linked animations · Worldlines · Lorentz transformations · Event-by-event calculations</p></header><main><nav class="tabs" id="tabs" aria-label="Experiment selection"></nav><section class="intro"><div><h2 id="scenarioTitle"></h2><p id="scenarioDesc"></p></div><div class="controlrow"><label>Frame comparison <select id="comparison"><option value="both">Side by side</option><option value="earth">S only</option><option value="moving">S′ only</option></select></label></div></section><section class="panel controls"><div class="controlrow"><button id="play">▶ Play</button><button id="reset">↺ Restart</button><button id="prev">◀ Event</button><button id="next">Event ▶</button><label><input id="fitView" type="checkbox" checked> Fixed overview (no camera zoom)</label><label>Playback <select id="speed"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option><option value="4">4×</option></select></label><label><input id="answers" type="checkbox"> Show worked calculations</label></div><div class="controlrow"><label class="slider">Timeline <input id="timeline" type="range" min="0" max="1000" value="0"></label><strong id="timeLabel"></strong></div><div class="controlrow"><label>Speed β = v/c <input id="beta" type="range" min="0.05" max="0.95" step="0.01" value="0.75"></label><strong id="betaLabel"></strong><span class="note" id="betaNote"></span></div><div class="readouts" id="readouts"></div></section><section class="visuals" id="visuals"><div class="panel" id="earthPanel"><h3>Frame S · <span id="earthTitle">Earth / laboratory</span></h3><canvas class="scene" id="earthScene" aria-label="Animation in stationary frame"></canvas><p class="note" id="earthClock"></p></div><div class="panel" id="movingPanel"><h3>Frame S′ · <span id="movingTitle">Moving observer</span></h3><canvas class="scene" id="movingScene" aria-label="Animation in moving frame"></canvas><p class="note" id="movingClock"></p></div><div class="panel diagram"><h3>Minkowski spacetime diagram · <span id="plotFrameTitle">Frame S coordinates</span></h3><div class="controlrow" style="margin:8px 0 12px"><label>Diagram reference frame <select id="plotFrame"><option value="S">S · Earth / laboratory</option><option value="Sp">S′ · Spacecraft / moving observer</option></select></label><label><input type="checkbox" id="showSliceS" checked> Show S time line</label><label><input type="checkbox" id="showSliceSp" checked> Show S′ time line</label><label><input type="checkbox" id="showGridS" checked> S grid</label><label><input type="checkbox" id="showGridSp" checked> S′ grid</label></div><canvas class="plot" id="plot" aria-label="Spacetime worldline diagram"></canvas><div class="legend" id="legend"></div><p class="note">Horizontal axis: position in the selected frame; vertical axis: ct in the same distance units. Light rays travel at 45° when both axes use equal scales. Blue: spacecraft worldline; yellow: radio or laser signal. Green dashed: constant S time; orange dashed: constant S′ time. Each line is transformed into the selected plotting coordinates. Both can be toggled independently. The two coordinate grids show constant-position and constant-time lines in their respective frames.</p></div></section><section class="bottom"><div class="panel"><h3>Events and coordinates</h3><p class="note">Select an event to jump to it. Coordinates in S′ use a Lorentz transformation; they refer to the same physical event.</p><div class="events" id="eventButtons"></div><div id="eventDetail" class="math"></div></div><div class="panel"><h3>Equations and activity questions</h3><div id="equations" class="math"></div><div id="questions"></div></div></section><p class="footer">PHY 240 · Teaching simulation. All distances and times are idealized; accelerations are neglected except where explicitly modeled. Both panels use independent coordinate clocks advancing at the same numerical rate; named events occur at different playback moments in S and S′. Use Event buttons to inspect event coordinates. Animations are not photographic appearances including light-travel delay. Time is in years or months; distance is in corresponding light-units, so c = 1.</p></main><script>
+'use strict';
+const $=id=>document.getElementById(id), C=299792458, eps=1e-9;
+const scenarios=[
+{id:'elephant',name:'Pregnant elephant',title:'Pregnant Elephant · Birth and Radio Reception',desc:'A pregnant elephant travels away from Earth. Compare the birth event with the later reception of its radio signal. Based on Chapter 4, Example 4-3.',beta:.75,unit:'months',maxBeta:.95},
+{id:'grace',name:'Grace to Tau Ceti',title:'Grace’s Journey · Time Dilation and Length Contraction',desc:'Hail Mary travels 12.0 light-years to Tau Ceti at 0.92c. Compare Earth’s coordinate time with Grace’s proper time (Exam 1, Problem 2).',beta:.92,unit:'years',maxBeta:.98},
+{id:'rocky',name:'Grace meets Rocky',title:'First Contact · Relativistic Velocity Addition',desc:'Hail Mary moves at +0.76c and Rocky at −0.54c, initially 4.5 × 10⁸ km apart (Exam 1, Problem 3, Part I).',beta:.76,unit:'seconds',maxBeta:.95},
+{id:'laser',name:'Laser message',title:'A Message to Earth · Lightlike Intervals',desc:'At 0.94c, Grace travels 12.0 light-years and immediately transmits a laser message back to Earth (Exam 1, Problem 3, Parts II–III).',beta:.94,unit:'years',maxBeta:.98},
+{id:'twin',name:'Twin paradox',title:'Twin Paradox · Accumulated Proper Time',desc:'A traveler flies outward, turns around, and returns. Compare accumulated proper times; the traveler changes inertial frames at turnaround.',beta:.8,unit:'years',maxBeta:.95},
+{id:'barn',name:'Pole and barn',title:'Pole-and-Barn Paradox · Relativity of Simultaneity',desc:'A 12 m pole passes through an 8 m barn. Compare door-closing events that are simultaneous in the barn frame but not in the pole frame.',beta:.8,unit:'meters',maxBeta:.95}
+];
+let sid='elephant',playing=false,frac=0,last=0,chosen=null;const fmt=(n,d=2)=>Number.isFinite(n)?(Math.abs(n)<1e-8?'0':n.toFixed(d)):'—';const gamma=b=>1/Math.sqrt(1-b*b);const tx=(x,t,b)=>({x:gamma(b)*(x-b*t),t:gamma(b)*(t-b*x)});const inv=(x,t,b)=>({x:gamma(b)*(x+b*t),t:gamma(b)*(t+b*x)});
+function model(){const s=scenarios.find(z=>z.id===sid),b=Number($('beta').value),g=gamma(b),events=[],lines=[];let objs=[],end=1,anchor=t=>b*t,scale=1,frameName='Spacecraft',labName='Earth';const add=(id,label,x,t,color='#fff')=>events.push({id,label,x,t,color});const line=(name,x0,u,t0,t1,color)=>lines.push({name,x0,u,t0,t1,color});
+if(sid==='elephant'){let tb=21*g,xb=b*tb,tr=tb+xb;end=tr;scale=Math.max(60,end);add('launch','Launch',0,0);add('birth','Calf born',xb,tb,'#5ab5ff');add('receive','Radio received',0,tr,'#ffd075');line('Earth',0,0,0,end,'#65dfb6');line('Elephant',0,b,0,end,'#5ab5ff');line('Radio',xb+tb,-1,tb,tr,'#ffd075');objs=[{name:'Earth',x0:0,u:0,color:'#65dfb6',icon:'earth'},{name:'Elephant spacecraft',x0:0,u:b,color:'#5ab5ff',icon:'ship'}];}
+if(sid==='grace'){let ta=12/b;end=ta*1.1;scale=16;add('depart','Departure',0,0);add('arrive','Tau Ceti arrival',12,ta,'#5ab5ff');line('Earth',0,0,0,end,'#65dfb6');line('Tau Ceti',12,0,0,end,'#ff8e9b');line('Hail Mary',0,b,0,ta,'#5ab5ff');objs=[{name:'Earth',x0:0,u:0,color:'#65dfb6',icon:'earth'},{name:'Tau Ceti',x0:12,u:0,color:'#ff8e9b',icon:'star'},{name:'Hail Mary',x0:0,u:b,color:'#5ab5ff',icon:'ship'}];}
+if(sid==='rocky'){// x in light-seconds; 4.5e8 km / c ≈ 1501 light-seconds
+let d=4.5e11/C,ur=-.54,tm=d/(b-ur),xm=b*tm;end=tm*1.16;scale=Math.max(1600,d*1.1);add('detect','Detection',0,0);add('meet','Encounter',xm,tm,'#ffd075');line('Grace',0,b,0,tm,'#5ab5ff');line('Rocky',d,ur,0,tm,'#ff8e9b');objs=[{name:'Hail Mary',x0:0,u:b,color:'#5ab5ff',icon:'ship'},{name:'Rocky',x0:d,u:ur,color:'#ff8e9b',icon:'ship'}];anchor=t=>b*t;frameName='Grace';labName='Tau Ceti';}
+if(sid==='laser'){let ta=12/b,tr=ta+12;end=tr;scale=28;add('depart','Departure',0,0);add('emit','Signal emitted',12,ta,'#5ab5ff');add('receive','Signal received',0,tr,'#ffd075');line('Earth',0,0,0,end,'#65dfb6');line('Tau Ceti',12,0,0,end,'#ff8e9b');line('Hail Mary',0,b,0,ta,'#5ab5ff');line('Laser',12+ta,-1,ta,tr,'#ffd075');objs=[{name:'Earth',x0:0,u:0,color:'#65dfb6',icon:'earth'},{name:'Tau Ceti',x0:12,u:0,color:'#ff8e9b',icon:'star'},{name:'Hail Mary',x0:0,u:b,color:'#5ab5ff',icon:'ship'}];}
+if(sid==='twin'){let turnaround=8,tt=turnaround/b;end=2*tt;scale=22;anchor=t=>t<=tt?b*t:2*turnaround-b*t;add('depart','Departure',0,0);add('turn','Turnaround',turnaround,tt,'#ff8e9b');add('reunite','Reunion',0,end,'#ffd075');line('Earth',0,0,0,end,'#65dfb6');line('Outbound twin',0,b,0,tt,'#5ab5ff');line('Inbound twin',2*turnaround,-b,tt,end,'#5ab5ff');objs=[{name:'Earth twin',x0:0,u:0,color:'#65dfb6',icon:'earth'},{name:'Traveling twin',dynamic:anchor,color:'#5ab5ff',icon:'ship'}];frameName='Traveler (instantaneous inertial frame)';}
+if(sid==='barn'){// units: meters and light-meters (ct). Pole length in its rest frame=12m; barn length 8m; door events at t=0 at x=0 and x=8
+let L=12/g;end=18;scale=20;anchor=t=>b*t;add('rear','Rear door closes',0,0,'#65dfb6');add('front','Front door closes',8,0,'#ffd075');add('exit','Pole rear exits',8,8/b,'#ff8e9b');line('Rear door',0,0,-8,end,'#65dfb6');line('Front door',8,0,-8,end,'#ff8e9b');line('Pole rear',0,b,-8,end,'#5ab5ff');line('Pole front',L,b,-8,end,'#5ab5ff');objs=[{name:'Barn',x0:0,u:0,color:'#65dfb6',icon:'barn',length:8},{name:'Pole',x0:0,u:b,color:'#5ab5ff',icon:'pole',length:L}];frameName='Pole';labName='Barn';}
+return {s,b,g,events,lines,objs,end,anchor,scale,frameName,labName};}
+function timeUnits(m){return m.s.unit==='months'?'months':m.s.unit==='years'?'years':m.s.unit==='seconds'?'seconds':'light-meters/c';}
+function details(m){const {b,g,events}=m;let rows=[];const event=id=>events.find(e=>e.id===id);if(sid==='elephant'){const e=event('birth'),r=event('receive');rows=[['γ',fmt(g,4)],['Birth: Earth time',fmt(e.t)+' mo'],['Birth: elephant time','21.00 mo'],['Earth receives radio',fmt(r.t)+' mo']];}if(sid==='grace'){let t=12/b;rows=[['γ',fmt(g,4)],['Earth journey time',fmt(t)+' yr'],['Grace proper time',fmt(t/g)+' yr'],['Grace-frame distance',fmt(12/g)+' ly']];}if(sid==='rocky'){let e=event('meet'),u=(-.54-b)/(1+.54*b);rows=[['Rocky velocity in Grace frame',fmt(u,4)+'c'],['Encounter time in S',fmt(e.t)+' s'],['Grace proper time',fmt(e.t/g)+' s'],['Encounter x in S',fmt(e.x)+' light-s']];}if(sid==='laser'){let e=event('emit'),r=event('receive');rows=[['γ',fmt(g,4)],['Journey time in S',fmt(e.t)+' yr'],['Grace proper time',fmt(e.t/g)+' yr'],['Signal reaches Earth',fmt(r.t)+' yr']];}if(sid==='twin'){let t=m.end;rows=[['Earth twin elapsed',fmt(t)+' yr'],['Traveler proper time',fmt(t/g)+' yr'],['Age difference',fmt(t-t/g)+' yr'],['Turnaround distance','8.00 ly']];}if(sid==='barn'){rows=[['γ',fmt(g,4)],['Pole length in barn frame',fmt(12/g)+' m'],['Barn proper length','8.00 m'],['Door-event Δt′',fmt(-g*b*8)+' light-m/c']];}return rows;}
+function eqs(m){const b=m.b,g=m.g;let body='<div>γ = 1/√(1 − β²) = '+fmt(g,4)+'</div><div>x′ = γ(x − βct), &nbsp; ct′ = γ(ct − βx)</div>';if(sid==='elephant')body+='<div>t<sub>birth</sub> = γ(21 mo)</div><div>t<sub>receive</sub> = t<sub>birth</sub>(1 + β)</div>';if(sid==='grace')body+='<div>t = 12 ly/(βc), &nbsp; Δτ = t/γ</div><div>L′ = 12 ly/γ</div>';if(sid==='rocky')body+='<div>u′ = (u − v)/(1 − uv/c²)</div><div>t<sub>meet</sub> = d/(v − u), &nbsp; d = 4.5 × 10⁸ km</div>';if(sid==='laser')body+='<div>t<sub>arrival</sub> = 12/β + 12 years</div><div>Δs² = c²Δt² − Δx² = 0 (laser)</div>';if(sid==='twin')body+='<div>Δτ = ∫√(1 − β(t)²)dt</div><div>Outbound/inbound are different inertial frames.</div>';if(sid==='barn')body+='<div>L<sub>pole,barn</sub> = 12 m/γ</div><div>Δt′ = −γvΔx/c²</div>';return body;}
+const questions={elephant:[['When does the calf arrive (Earth-frame birth time)?', 'birth','months'],['When does Earth receive the radio signal?', 'receive','months']],grace:[['How many Earth years to Tau Ceti?','journey','years'],['How many years on Grace’s clock?','proper','years']],rocky:[['What is Rocky’s velocity relative to Grace (in units of c)?','relative','c'],['When do they meet in the Tau Ceti frame?','meet','seconds']],laser:[['When does the laser reach Earth after departure?','receive','years'],['What is the squared spacetime interval of the laser path?','interval','(light-years)²']],twin:[['How many years pass on the traveler’s clock?','proper','years'],['How many years pass on Earth?','earth','years']],barn:[['How long is the pole in the barn frame?','pole','meters'],['Are the two door-closing events simultaneous in the pole frame? Enter 1 for yes, 0 for no.','sim','0 or 1']]};
+function correct(m,k){const e=id=>m.events.find(z=>z.id===id);switch(k){case'birth':return e('birth').t;case'receive':return e('receive').t;case'journey':return e('arrive').t;case'proper':return sid==='twin'?m.end/m.g:e('arrive').t/m.g;case'relative':return(-.54-m.b)/(1+.54*m.b);case'meet':return e('meet').t;case'interval':return 0;case'earth':return m.end;case'pole':return 12/m.g;case'sim':return 0;}}
+function renderStatic(){let m=model();$('scenarioTitle').textContent=m.s.title;$('scenarioDesc').textContent=m.s.desc;$('betaLabel').textContent=fmt(m.b,2)+'c';$('betaNote').textContent='γ = '+fmt(m.g,3);$('earthTitle').textContent=m.labName;$('movingTitle').textContent=m.frameName;$('readouts').innerHTML=details(m).map(([a,b])=>`<div class="stat"><small>${a}</small><strong>${b}</strong></div>`).join('');$('equations').innerHTML=eqs(m);$('eventButtons').innerHTML=m.events.map(e=>`<button data-event="${e.id}">${e.label}</button>`).join('');$('eventButtons').querySelectorAll('button').forEach(btn=>btn.onclick=()=>{chosen=btn.dataset.event;frac=m.events.find(e=>e.id===chosen).t/m.end;playing=false;draw();});$('questions').innerHTML=questions[sid].map(([q,k,u],i)=>`<div class="question"><label>${i+1}. ${q}<br><input type="number" step="any" id="ans${i}" placeholder="Your answer"> ${u}</label> <button data-check="${i}">Check</button><span class="result" id="res${i}"></span></div>`).join('');$('questions').querySelectorAll('[data-check]').forEach(btn=>btn.onclick=()=>{let i=Number(btn.dataset.check),input=$('ans'+i),v=Number(input.value),r=correct(model(),questions[sid][i][1]);$('res'+i).textContent=input.value===''?'Enter a number':Math.abs(v-r)<=Math.max(.015*Math.abs(r),.03)?'✓ Correct':'Try again; check your frame and units.';$('res'+i).style.color=input.value!==''&&Math.abs(v-r)<=Math.max(.015*Math.abs(r),.03)?'#65dfb6':'#ffcf75';});draw();}
+function setupCanvas(canvas){const dpr=Math.min(devicePixelRatio||1,2),rect=canvas.getBoundingClientRect(),w=rect.width,h=rect.height;canvas.width=Math.round(w*dpr);canvas.height=Math.round(h*dpr);const c=canvas.getContext('2d');c.setTransform(dpr,0,0,dpr,0,0);return {c,w,h};}
+function mappedFrameTime(m,tS){
+ // A shared event-progress timeline, not a shared simultaneity slice.
+ // Each panel uses its OWN coordinate time. The same named events line up
+ // at the same animation progress, including signal reception in S′.
+ if(sid==='twin')return tx(m.anchor(tS),tS,m.b).t;
+ const knots=[{x:0,t:0},...m.events.filter(e=>e.t>0).sort((a,b)=>a.t-b.t)];
+ if(knots[knots.length-1].t<m.end)knots.push({x:m.anchor(m.end),t:m.end});
+ let a=knots[0],z=knots[knots.length-1];
+ for(let i=1;i<knots.length;i++)if(tS<=knots[i].t){a=knots[i-1];z=knots[i];break;}
+ const f=z.t===a.t?0:Math.max(0,Math.min(1,(tS-a.t)/(z.t-a.t)));
+ const at=tx(a.x,a.t,m.b).t,zt=tx(z.x,z.t,m.b).t;
+ return at+(zt-at)*f;
+}
+function independentTiming(){return sid==='elephant'||sid==='laser'||sid==='grace'||sid==='rocky';}
+function frameDuration(m){
+ if(!independentTiming())return m.end;
+ let vals=m.events.map(e=>tx(e.x,e.t,m.b).t);
+ vals.push(tx(m.anchor(m.end),m.end,m.b).t);
+ return Math.max(m.end,...vals);
+}
+function drawScene(id,m,isMoving,tS,refEvent){const {c,w,h}=setupCanvas($(id));c.clearRect(0,0,w,h);let b=m.b,tPrime=tx(refEvent.x,refEvent.t,b).t,frameT=isMoving?(independentTiming()?Math.min(frac*frameDuration(m),frameDuration(m)):mappedFrameTime(m,tS)):tS;let pivot=isMoving?tx(refEvent.x,refEvent.t,b).x:refEvent.x;const viewScale=sid==='rocky'?m.scale*.8:sid==='barn'?17:sid==='elephant'?Math.max(35,m.scale*.65):sid==='twin'?16:16;let pp=Math.min((w-70)/viewScale,28);let cameraCenter=pivot;let X=x=>w/2+(x-cameraCenter)*pp;
+// starfield
+for(let i=0;i<32;i++){let x=(i*131+19)%Math.max(1,w),y=(i*71+27)%Math.max(1,h-30);c.fillStyle='rgba(174,205,243,.25)';c.fillRect(x,y,1.3,1.3);}c.strokeStyle='#51637b';c.lineWidth=1;c.beginPath();c.moveTo(15,h-43);c.lineTo(w-15,h-43);c.stroke();
+function posAt(obj){if(sid==='twin'&&obj.dynamic){if(!isMoving)return m.anchor(tS); // use local comoving frame with transformation anchored at turnaround
+let turn=8/m.b,u=tS<=turn?b:-b,xc=m.anchor(tS),tc=tS;return 0;}
+let x0=obj.x0,u=obj.u;if(!isMoving)return x0+u*tS;let tt=(frameT/m.g+b*x0)/(1-b*u);return tx(x0+u*tt,tt,b).x;}
+let visible=m.objs.map(o=>({...o,pos:posAt(o)}));if(sid==='twin'&&isMoving){let traveler=m.anchor(tS),turn=8/m.b,sign=tS<=turn?b:-b;let earthPos=tS<=turn?-b*tS/m.g:-8/m.g+b*(tS-turn)/m.g;visible[0].pos=earthPos;visible[1].pos=0;}
+// Fixed overview: determine the entire coordinate range ONCE from the
+// scenario endpoints. Never zoom or pan while the animation plays.
+if($('fitView').checked){
+  let bounds=[];
+  const samples=[0,...m.events.map(e=>e.t),m.end];
+  for(const ts of samples){
+    const ft=isMoving?mappedFrameTime(m,ts):ts;
+    for(const o of m.objs){
+      if(o.dynamic){bounds.push(isMoving?0:m.anchor(ts));continue;}
+      let x;
+      if(isMoving){const tt=(ft/m.g+b*o.x0)/(1-b*o.u);x=tx(o.x0+o.u*tt,tt,b).x;}
+      else x=o.x0+o.u*ts;
+      bounds.push(x);
+      if(o.icon==='barn')bounds.push(x+8*(isMoving?1/m.g:1));
+      if(o.icon==='pole')bounds.push(x+(isMoving?12:12/m.g));
+    }
+  }
+  const signal=m.lines.find(l=>l.name==='Radio'||l.name==='Laser');
+  if(signal){
+    const em=m.events.find(e=>e.id==='birth'||e.id==='emit'),rec=m.events.find(e=>e.id==='receive');
+    bounds.push((isMoving?tx(em.x,em.t,b):em).x,(isMoving?tx(rec.x,rec.t,b):rec).x);
+  }
+  let lo=Math.min(...bounds),hi=Math.max(...bounds),range=Math.max(hi-lo,1);
+  let padding=Math.max(range*.16,1);
+  cameraCenter=(lo+hi)/2;
+  pp=Math.min((w-115)/(range+2*padding),28);
+}
+visible.forEach(o=>{let x=X(o.pos),y=h-66;if(x< -100||x>w+100)return;c.save();if(o.icon==='earth'){c.fillStyle=o.color;c.beginPath();c.arc(x,y,13,0,Math.PI*2);c.fill();c.fillStyle='#285b65';c.beginPath();c.ellipse(x-2,y-3,6,4,.5,0,Math.PI*2);c.fill();}else if(o.icon==='star'){c.fillStyle=o.color;c.beginPath();c.arc(x,y,8,0,7);c.fill();}else if(o.icon==='ship'){c.fillStyle=o.color;c.beginPath();c.moveTo(x+17,y);c.lineTo(x-9,y-9);c.lineTo(x-6,y);c.lineTo(x-9,y+9);c.closePath();c.fill();c.fillStyle='#d8f3ff';c.fillRect(x,y-2,5,4);}else if(o.icon==='barn'){let width=8*(isMoving?1/m.g:1)*pp;c.strokeStyle=o.color;c.lineWidth=3;c.strokeRect(x,y-15,width,30);c.beginPath();c.moveTo(x,y-15);c.lineTo(x+width/2,y-29);c.lineTo(x+width,y-15);c.stroke();}else if(o.icon==='pole'){let length=(isMoving?12:12/m.g)*pp;c.strokeStyle=o.color;c.lineWidth=7;c.beginPath();c.moveTo(x,y);c.lineTo(x+length,y);c.stroke();}c.fillStyle=o.color;c.textAlign='center';c.font='12px system-ui';c.fillText(o.name,x,y+31);c.restore();});
+// light signal from emission to reception, transform emission and point along ray
+let light=m.lines.find(l=>l.name==='Radio'||l.name==='Laser');if(light){let em=m.events.find(e=>e.id==='birth'||e.id==='emit'),rec=m.events.find(e=>e.id==='receive');let e1=isMoving?tx(em.x,em.t,b):em,e2=isMoving?tx(rec.x,rec.t,b):rec;if(frameT>=e1.t&&frameT<=e2.t){let xx=e1.x+(e2.x-e1.x)*(frameT-e1.t)/(e2.t-e1.t);c.fillStyle='#ffd075';c.beginPath();c.arc(X(xx),h-67,6,0,7);c.fill();c.strokeStyle='#ffd075';c.lineWidth=2;c.beginPath();c.moveTo(X(xx)-17,h-67);c.lineTo(X(xx)+17,h-67);c.stroke();}}
+c.fillStyle='#b6c6df';c.font='12px system-ui';c.textAlign='left';c.fillText((isMoving?'t′ = ':'t = ')+fmt(frameT,2)+' '+timeUnits(m),12,21);c.fillText(independentTiming()?'Independent coordinate-time playback':'Event comparison playback',12,39);
+}
+function drawPlot(m,tS,refEvent){
+ const {c,w,h}=setupCanvas($('plot'));
+ const moving=$('plotFrame').value==='Sp';
+ $('plotFrameTitle').textContent=moving?'Frame S′ coordinates':'Frame S coordinates';
+ const transform=p=>moving?tx(p.x,p.t,m.b):p;
+ // Transform BOTH endpoints of each worldline. A lightlike line stays lightlike.
+ const segments=m.lines.map(l=>{
+   // Photon paths are defined by their physical endpoint EVENTS, not a separately
+   // reconstructed line equation. This enforces emission at birth and reception on Earth.
+   if(l.name==='Radio'||l.name==='Laser'){
+     const emit=m.events.find(e=>e.id==='birth'||e.id==='emit');
+     const receive=m.events.find(e=>e.id==='receive');
+     return {name:l.name,color:l.color,a:transform({x:emit.x,t:emit.t}),z:transform({x:receive.x,t:receive.t})};
+   }
+   return {name:l.name,color:l.color,a:transform({x:l.x0+l.u*l.t0,t:l.t0}),z:transform({x:l.x0+l.u*l.t1,t:l.t1})};
+ });
+ const events=m.events.map(e=>({...transform(e),label:e.label,color:e.color}));
+ // Independent consistency check: the photon endpoints MUST coincide with the event markers.
+ if(sid==='elephant'||sid==='laser'){
+   const photon=segments.find(q=>q.name==='Radio'||q.name==='Laser');
+   const em=events.find(e=>e.label==='Calf born'||e.label==='Signal emitted');
+   const rec=events.find(e=>e.label==='Radio received'||e.label==='Signal received');
+   const d=(a,z)=>Math.hypot(a.x-z.x,a.t-z.t);
+   if(!photon||!em||!rec||d(photon.a,em)>1e-7||d(photon.z,rec)>1e-7){
+     console.error('Worldline endpoint validation failed', {photon,em,rec});
+     c.fillStyle='#ff6b6b';c.font='bold 18px system-ui';c.fillText('ERROR: photon endpoints do not match events',30,35);
+   }
+ }
+ const current=transform(refEvent);
+ // The current-time indicator must use the clock of the SELECTED plotting frame.
+ // In independent playback the S and S′ coordinate clocks advance by equal
+ // numerical increments, but their equal-time slices are not the same events.
+ const plotTime = moving && independentTiming()
+   ? Math.min(frac*frameDuration(m),frameDuration(m)) : tS;
+ const span=Math.max(m.scale,m.end,15)*4;
+ // The two independent clocks are equal in numerical elapsed time during playback,
+ // but their constant-time hypersurfaces are DIFFERENT sets of events.
+ const clockS=tS;
+ const clockSp=independentTiming()?Math.min(frac*frameDuration(m),frameDuration(m)):mappedFrameTime(m,tS);
+ const sToPlot=p=>moving?tx(p.x,p.t,m.b):p;
+ const spToPlot=p=>moving?p:inv(p.x,p.t,m.b);
+ const slices=[];
+ if($('showSliceS').checked) slices.push({label:'S',time:clockS,color:'#65dfb6',a:sToPlot({x:-span,t:clockS}),z:sToPlot({x:span,t:clockS})});
+ if($('showSliceSp').checked) slices.push({label:'S′',time:clockSp,color:'#f5a65a',a:spToPlot({x:-span,t:clockSp}),z:spToPlot({x:span,t:clockSp})});
+ // Keep all events and worldline endpoints within the plot; preserve equal scales on x and ct.
+ const pts=[...segments.flatMap(q=>[q.a,q.z]),...events,{x:0,t:0},current];
+ let minX=Math.min(...pts.map(p=>p.x)),maxX=Math.max(...pts.map(p=>p.x));
+ let minT=Math.min(...pts.map(p=>p.t)),maxT=Math.max(...pts.map(p=>p.t));
+ const pad={l:65,r:25,t:25,b:48},pw=w-pad.l-pad.r,ph=h-pad.t-pad.b;
+ const dx=Math.max(maxX-minX,1),dt=Math.max(maxT-minT,1);
+ const margin=Math.max(dx,dt)*.075;
+ minX-=margin;maxX+=margin;minT-=margin;maxT+=margin;
+ const unit=Math.min(pw/(maxX-minX),ph/(maxT-minT));
+ const cx=(minX+maxX)/2,ct=(minT+maxT)/2;
+ const xx=x=>pad.l+pw/2+(x-cx)*unit;
+ const yy=t=>pad.t+ph/2-(t-ct)*unit;
+ c.clearRect(0,0,w,h);
+ c.save();c.beginPath();c.rect(pad.l,pad.t,pw,ph);c.clip();
+ const desired=Math.max(maxX-minX,maxT-minT)/8;
+ const pow=Math.pow(10,Math.floor(Math.log10(Math.max(desired,1e-8))));
+ const step=[1,2,5,10].map(q=>q*pow).find(q=>q>=desired)||10*pow;
+ c.strokeStyle='rgba(200,220,250,.11)';c.lineWidth=1;
+ const xlo=cx-pw/(2*unit),xhi=cx+pw/(2*unit),tlo=ct-ph/(2*unit),thi=ct+ph/(2*unit);
+ // Draw complete coordinate grids for both frames. Lines are transformed
+ // from constant x / constant t (S) and constant x′ / constant t′ (S′).
+ // Use long segments and clip to the diagram; do not connect different clocks.
+ const gridSpan=Math.max(Math.abs(xlo),Math.abs(xhi),Math.abs(tlo),Math.abs(thi),m.scale,m.end,15)*5;
+ function gridFamily(toPlot, color, spacing){
+   c.strokeStyle=color;c.lineWidth=0.85;c.setLineDash([]);
+   const bound=Math.ceil(gridSpan/spacing)*spacing;
+   for(let k=-bound;k<=bound;k+=spacing){
+     const lines=[ [{x:k,t:-gridSpan},{x:k,t:gridSpan}], [{x:-gridSpan,t:k},{x:gridSpan,t:k}] ];
+     for(const [a,z] of lines){const aa=toPlot(a),zz=toPlot(z);c.beginPath();c.moveTo(xx(aa.x),yy(aa.t));c.lineTo(xx(zz.x),yy(zz.t));c.stroke();}
+   }
+ }
+ if($('showGridS').checked) gridFamily(sToPlot,'rgba(101,223,182,.19)',step);
+ if($('showGridSp').checked) gridFamily(spToPlot,'rgba(245,166,90,.22)',step);
+
+ for(const l of segments){c.strokeStyle=l.color;c.lineWidth=2.7;c.beginPath();c.moveTo(xx(l.a.x),yy(l.a.t));c.lineTo(xx(l.z.x),yy(l.z.t));c.stroke();}
+ c.setLineDash([5,5]);c.lineWidth=1.4;
+ for(const sl of slices){c.strokeStyle=sl.color;c.beginPath();c.moveTo(xx(sl.a.x),yy(sl.a.t));c.lineTo(xx(sl.z.x),yy(sl.z.t));c.stroke();}
+ c.setLineDash([]);
+ // Draw colored clock labels in a fixed corner; angled lines need not intersect the left border.
+ c.font='11px system-ui';
+ slices.forEach((sl,i)=>{c.fillStyle=sl.color;c.fillText((sl.label==='S'?'t = ':'t′ = ')+sl.time.toFixed(2),pad.l+8,pad.t+16+i*17);});
+ for(const e of events){c.fillStyle=e.color;c.beginPath();c.arc(xx(e.x),yy(e.t),5,0,Math.PI*2);c.fill();c.font='11px system-ui';c.fillStyle='#e6eefc';c.fillText(e.label,xx(e.x)+8,yy(e.t)-8);}
+ c.restore();c.strokeStyle='#a5b5cd';c.lineWidth=1.5;c.strokeRect(pad.l,pad.t,pw,ph);
+ c.fillStyle='#c2d0e5';c.font='12px system-ui';c.fillText(moving?'ct′':'ct',pad.l-37,pad.t+8);c.fillText(moving?'x′':'x',w-pad.r-8,h-12);
+ if(xlo<=0&&xhi>=0&&tlo<=0&&thi>=0){c.font='10px system-ui';c.fillText('0',xx(0)-12,yy(0)+12);}
+}
+function draw(){let m=model(),tS=independentTiming()?Math.min(frac*frameDuration(m),m.end):frac*m.end,anchorX=m.anchor(tS),ref={x:anchorX,t:tS};$('timeline').value=Math.round(frac*1000);$('timeLabel').textContent='S: '+fmt(tS,2)+' · S′: '+fmt(independentTiming()?frac*frameDuration(m):mappedFrameTime(m,tS),2)+' '+timeUnits(m);let comp=$('comparison').value;$('earthPanel').style.display=comp==='moving'?'none':'';$('movingPanel').style.display=comp==='earth'?'none':'';$('visuals').style.gridTemplateColumns=comp==='both'?'1fr 1fr':'1fr';if(comp!=='moving')drawScene('earthScene',m,false,tS,ref);if(comp!=='earth')drawScene('movingScene',m,true,tS,ref);drawPlot(m,tS,ref);let closest=m.events.reduce((a,e)=>Math.abs(e.t-tS)<Math.abs(a.t-tS)?e:a,m.events[0]);let transformed=tx(closest.x,closest.t,m.b);$('eventDetail').innerHTML=`<p><strong>${closest.label}</strong></p><div>S: (x, ct) = (${fmt(closest.x)}, ${fmt(closest.t)})</div><div>${sid==='twin'?'Outbound inertial chart (not valid as a single global traveler frame)':'S′'}: (x′, ct′) = (${fmt(transformed.x)}, ${fmt(transformed.t)})</div><p class="note">Coordinates use ${m.s.unit==='months'?'light-months':m.s.unit==='years'?'light-years':m.s.unit==='seconds'?'light-seconds':'meters'} for x and ct.</p>`;$('play').textContent=playing?'Ⅱ Pause':'▶ Play';}
+function activate(id){sid=id;playing=false;frac=0;chosen=null;let s=scenarios.find(z=>z.id===id);$('beta').max=s.maxBeta;$('beta').value=s.beta;$('tabs').querySelectorAll('button').forEach(b=>b.classList.toggle('active',b.dataset.id===id));renderStatic();}
+$('tabs').innerHTML=scenarios.map(s=>`<button data-id="${s.id}">${s.name}</button>`).join('');$('tabs').querySelectorAll('button').forEach(b=>b.onclick=()=>activate(b.dataset.id));$('beta').oninput=()=>{playing=false;renderStatic()};$('timeline').oninput=e=>{playing=false;frac=Number(e.target.value)/1000;draw()};$('play').onclick=()=>{if(frac>=1)frac=0;playing=!playing;draw()};$('reset').onclick=()=>{playing=false;frac=0;draw()};$('speed').onchange=draw;$('fitView').onchange=draw;$('comparison').onchange=draw;$('plotFrame').onchange=draw;$('showSliceS').onchange=draw;$('showSliceSp').onchange=draw;$('showGridS').onchange=draw;$('showGridSp').onchange=draw;$('prev').onclick=()=>{let m=model(),arr=m.events.map(e=>e.t/(independentTiming()?frameDuration(m):m.end)),x=[...arr].reverse().find(v=>v<frac-.005);frac=x===undefined?0:x;playing=false;draw()};$('next').onclick=()=>{let m=model(),x=m.events.map(e=>e.t/(independentTiming()?frameDuration(m):m.end)).find(v=>v>frac+.005);frac=x===undefined?1:x;playing=false;draw()};$('answers').onchange=()=>{$('equations').style.display=$('answers').checked?'block':'none';document.querySelectorAll('.stat').forEach(e=>e.style.filter=$('answers').checked?'none':'blur(5px)')};$('answers').checked=true;window.addEventListener('resize',draw);function tick(ts){if(playing){if(last){frac=Math.min(1,frac+(ts-last)/1000*.045*Number($('speed').value));if(frac>=1)playing=false;}draw();}last=ts;requestAnimationFrame(tick);}activate('elephant');requestAnimationFrame(tick);
+</script></body></html>
